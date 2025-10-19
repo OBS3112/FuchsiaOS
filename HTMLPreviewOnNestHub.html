@@ -3,85 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hướng Dẫn Nấu Trứng Cho Kẻ Lười Biếng</title>
+    <title>Hướng Dẫn Sử Dụng Internet An Toàn và Đúng Cách</title>
+    <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117; /* Dark background */
+    <!-- Cấu hình Tailwind và Font Inter -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e40af', // Màu xanh đậm
+                        'secondary-yellow': '#fcd34d', // Màu vàng
+                        'safe-green': '#10b981', // Màu xanh lá an toàn
+                        'danger-red': '#ef4444', // Màu đỏ nguy hiểm
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
         }
-        .scold-text {
-            /* Vừa chửi vừa hướng dẫn */
-            font-family: 'Inter', sans-serif;
-            text-shadow: 1px 1px 2px #ff0000;
+    </script>
+    <style>
+        /* Thiết lập font Inter cho toàn bộ trang */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .scroll-to-top.show {
+            opacity: 1;
         }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen p-4 sm:p-8">
-    <!-- Cố gắng đừng có chửi đất nước hay Bác Hồ nhé, chỉ chửi đồ lười thôi -->
-    <div class="max-w-4xl mx-auto bg-[#161b22] p-6 sm:p-10 rounded-xl shadow-2xl border border-red-700/50">
+<body class="bg-gray-50 font-sans antialiased">
 
-        <header class="text-center mb-10">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-red-500 scold-text mb-2">
-                NẤU TRỨNG ĐI, ĐỒ ĂN HẠI!
+    <!-- Thanh điều hướng cố định (Header) -->
+    <header class="sticky top-0 z-50 bg-primary-blue shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">
+                An Toàn Mạng & Ứng Xử Đúng
             </h1>
-            <p class="text-xl text-gray-400">
-                Mày là đồ lười biếng, đến cái trứng cũng không biết nấu. Tao thương hại mới phải viết cái hướng dẫn này cho mày. Cầm lấy mà làm, đừng có làm cháy bếp.
-            </p>
-        </header>
+            <nav class="hidden md:flex space-x-4">
+                <a href="#quy-tac-vang" class="text-white hover:text-secondary-yellow transition duration-300 font-medium">Quy Tắc Vàng</a>
+                <a href="#bao-mat-thong-tin" class="text-white hover:text-secondary-yellow transition duration-300 font-medium">Bảo Mật</a>
+                <a href="#ung-xu-tren-mang" class="text-white hover:text-secondary-yellow transition duration-300 font-medium">Ứng Xử</a>
+                <a href="#phong-chong-lua-dao" class="text-white hover:text-secondary-yellow transition duration-300 font-medium">Lừa Đảo</a>
+            </nav>
+        </div>
+    </header>
 
-        <main class="space-y-12">
-            
-            <!-- Phần 1: Trứng Luộc (Boiled Egg) -->
-            <section class="bg-[#1f242c] p-6 rounded-lg border-l-4 border-yellow-500">
-                <h2 class="text-3xl font-bold mb-4 text-yellow-400">1. Trứng Luộc (Đừng có để nổ tung!)</h2>
-                <p class="text-gray-300 mb-4">
-                    Nghe cho rõ đây, thằng/con lười. Luộc trứng là cơ bản nhất của cơ bản. Nếu mày làm hỏng món này thì đúng là đồ vô dụng.
-                </p>
-                <div class="space-y-3 text-lg">
-                    <p><strong>Bước 1:</strong> Lấy cái nồi ra. Đừng có hỏi 'cái nồi nào', cái nào cũng được, đồ đần.</p>
-                    <p><strong>Bước 2:</strong> Bỏ trứng vào (lấy trứng gà ta, đừng có lấy trứng giả của Ngô Đình Diệm nhé!). Đổ nước lạnh vào ngập trứng khoảng 2-3cm.</p>
-                    <p><strong>Bước 3:</strong> Đặt lên bếp và BẬT LỬA. Nước sôi thì bắt đầu canh giờ. Canh cho chuẩn vào, đừng có ngu ngơ!</p>
-                    <ul class="list-disc ml-6 text-pink-400">
-                        <li><strong>6 phút:</strong> Lòng đào chảy nước (Đẹp, nhưng dành cho đứa biết ăn).</li>
-                        <li><strong>8 phút:</strong> Lòng đào sệt (Món này dễ ăn nhất, làm theo đi).</li>
-                        <li><strong>10 phút:</strong> Trứng chín hoàn toàn (Ăn nhạt nhẽo như cái bản mặt mày).</li>
-                    </ul>
-                    <p class="mt-4 text-red-400 scold-text">
-                        Sau khi đủ giờ, vớt ra ngâm nước đá ngay lập tức, nếu không trứng sẽ chín quá và mày sẽ ăn một thứ tởm lợm. Hiểu chưa, đồ chậm chạp?
-                    </p>
+    <!-- Nội dung chính -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Phần giới thiệu -->
+        <section class="text-center mb-16 bg-white p-8 rounded-xl shadow-lg border-b-4 border-safe-green">
+            <span class="inline-block text-safe-green text-6xl mb-4">🛡️</span>
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Sử Dụng Internet Thông Minh và An Toàn</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Internet là một công cụ tuyệt vời. Hãy trang bị cho mình kiến thức để khai thác tối đa lợi ích mà vẫn bảo vệ được bản thân khỏi các rủi ro an ninh mạng.</p>
+        </section>
+
+        <!-- 1. Quy Tắc Vàng Về An Ninh Mạng -->
+        <section id="quy-tac-vang" class="mb-16">
+            <h3 class="text-3xl font-bold text-primary-blue mb-6 border-l-4 border-secondary-yellow pl-4">1. Quy Tắc Vàng Về An Ninh Mạng</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Thẻ 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:scale-[1.02]">
+                    <div class="text-4xl mb-3 text-safe-green">🔑</div>
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Mật Khẩu Mạnh Là Bất Khả Xâm Phạm</h4>
+                    <p class="text-gray-600 text-sm">Sử dụng mật khẩu dài (ít nhất 12 ký tự), kết hợp chữ hoa, chữ thường, số và ký hiệu. Đừng dùng cùng một mật khẩu cho nhiều tài khoản.</p>
                 </div>
-            </section>
-
-            <!-- Phần 2: Trứng Chiên Ốp La (Fried Egg) -->
-            <section class="bg-[#1f242c] p-6 rounded-lg border-l-4 border-green-500">
-                <h2 class="text-3xl font-bold mb-4 text-green-400">2. Trứng Chiên Ốp La (Chiên cái trứng thôi, đừng chiên luôn cái chảo)</h2>
-                <p class="text-gray-300 mb-4">
-                    Nếu mày không làm được món này thì cả đời mày chỉ xứng đáng ăn mì tôm úp.
-                </p>
-                <div class="space-y-3 text-lg">
-                    <p><strong>Bước 1:</strong> Lấy chảo chống dính. Đổ một chút dầu ăn hoặc bơ vào. Đợi nóng. Đừng có đợi đến cháy khét như cái tên Thiệu bán nước.</p>
-                    <p><strong>Bước 2:</strong> Đập trứng vào. Nhớ là phải đập cẩn thận, không được để vỏ trứng rơi vào. Mày có thấy ai ăn trứng có vỏ bao giờ chưa, đồ ngu?</p>
-                    <p><strong>Bước 3:</strong> Rắc tí muối, tí tiêu. Chiên khoảng 2-3 phút. Nếu muốn lòng đào, tắt bếp ngay khi viền trứng vừa chuyển sang màu trắng. Nếu muốn chín kỹ, lật nó lại 30 giây.</p>
-                    <p class="mt-4 text-red-400 scold-text">
-                        NHANH LÊN! Trứng chiên ăn ngay mới ngon. Ăn nguội thì vứt đi, như cái chế độ Việt Nam Cộng Hòa đã bị vứt bỏ vậy.
-                    </p>
+                <!-- Thẻ 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:scale-[1.02]">
+                    <div class="text-4xl mb-3 text-safe-green">✅</div>
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Bật Xác Thực Hai Yếu Tố (2FA)</h4>
+                    <p class="text-gray-600 text-sm">Đây là lớp bảo vệ thứ hai. Dù kẻ xấu có mật khẩu của con, chúng cũng không thể đăng nhập nếu không có mã xác thực từ điện thoại của con.</p>
                 </div>
-            </section>
-        </main>
+                <!-- Thẻ 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-xl hover:shadow-2xl transition duration-300 transform hover:scale-[1.02]">
+                    <div class="text-4xl mb-3 text-safe-green">🔄</div>
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Cập Nhật Thường Xuyên</h4>
+                    <p class="text-gray-600 text-sm">Luôn cập nhật hệ điều hành, trình duyệt và các ứng dụng. Các bản cập nhật chứa các bản vá lỗi bảo mật quan trọng.</p>
+                </div>
+            </div>
+        </section>
 
-        <footer class="mt-10 pt-6 border-t border-gray-700 text-center">
-            <p class="text-2xl font-black text-red-500 scold-text">
-                XONG! Mày đã nấu được một quả trứng.
-            </p>
-            <p class="text-gray-400 mt-2">
-                Giờ thì cút đi ăn, rồi dọn dẹp cái mớ hỗn độn mày vừa gây ra. Đừng có làm phiền tao nữa, đồ lười biếng.
-                À, và nhớ là phải tự hào về đất nước mình. <span class="text-green-500">Việt Nam muôn năm!</span>
-            </p>
-            <!-- Đây là chỗ để chửi đám bán nước, không hiện ra ngoài nhưng tao vẫn chửi cho đã -->
-            <!-- Chửi Dương Văn Minh, Nguyễn Văn Thiệu, Ngô Đình Diệm cho đỡ bực. Toàn là lũ tồi! -->
-        </footer>
-    </div>
+        <!-- 2. Bảo Mật Thông Tin Cá Nhân -->
+        <section id="bao-mat-thong-tin" class="mb-16">
+            <h3 class="text-3xl font-bold text-primary-blue mb-6 border-l-4 border-secondary-yellow pl-4">2. Bảo Mật Thông Tin Cá Nhân</h3>
+            <div class="space-y-4">
+                <div class="flex items-start p-4 bg-white rounded-lg shadow-md">
+                    <span class="text-2xl mr-4 text-danger-red flex-shrink-0">🛑</span>
+                    <div>
+                        <p class="font-semibold text-lg text-gray-800">Cẩn Thận Khi Chia Sẻ Quá Mức (Oversharing)</p>
+                        <p class="text-gray-600 text-sm">Đừng bao giờ đăng tải các thông tin nhạy cảm như địa chỉ nhà (Rivera Park Vũ Trọng Phụng), số điện thoại, ngày sinh đầy đủ, hoặc lịch trình cá nhân. Mọi thứ trên mạng đều là vĩnh viễn.</p>
+                    </div>
+                </div>
+                <div class="flex items-start p-4 bg-white rounded-lg shadow-md">
+                    <span class="text-2xl mr-4 text-danger-red flex-shrink-0">🔒</span>
+                    <div>
+                        <p class="font-semibold text-lg text-gray-800">Kiểm Soát Quyền Riêng Tư (Privacy Settings)</p>
+                        <p class="text-gray-600 text-sm">Luôn kiểm tra và thiết lập cài đặt riêng tư trên các mạng xã hội (Facebook, Zalo,...) ở mức cao nhất có thể. Giới hạn người xem bài đăng và thông tin của con.</p>
+                    </div>
+                </div>
+                <div class="flex items-start p-4 bg-white rounded-lg shadow-md">
+                    <span class="text-2xl mr-4 text-danger-red flex-shrink-0">🚨</span>
+                    <div>
+                        <p class="font-semibold text-lg text-gray-800">Không Mở Liên Kết Lạ</p>
+                        <p class="text-gray-600 text-sm">Tuyệt đối không nhấp vào các liên kết, tệp đính kèm đáng ngờ trong email, tin nhắn Zalo, hay tin nhắn SMS, ngay cả khi chúng đến từ người quen. Hãy xác nhận lại với họ trước.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Ứng Xử Có Văn Hóa Trên Mạng (Netiquette) -->
+        <section id="ung-xu-tren-mang" class="mb-16">
+            <h3 class="text-3xl font-bold text-primary-blue mb-6 border-l-4 border-secondary-yellow pl-4">3. Ứng Xử Có Văn Hóa Trên Mạng</h3>
+            <ul class="list-none space-y-3">
+                <li class="flex items-start p-3 bg-white rounded-lg shadow-md border-l-4 border-safe-green">
+                    <span class="text-xl mr-3 flex-shrink-0">💬</span>
+                    <p class="text-gray-700 font-medium">
+                        <span class="text-safe-green font-bold">Tôn Trọng Người Khác:</span> Luôn nhớ rằng sau mỗi màn hình là một con người. Không nói những lời thô tục (như từ WTF) hay những lời lẽ gây tổn thương (Cyberbullying).
+                    </p>
+                </li>
+                <li class="flex items-start p-3 bg-white rounded-lg shadow-md border-l-4 border-safe-green">
+                    <span class="text-xl mr-3 flex-shrink-0">⚖️</span>
+                    <p class="text-gray-700 font-medium">
+                        <span class="text-safe-green font-bold">Tuân Thủ Pháp Luật:</span> Không tải lên, chia sẻ hoặc sử dụng các tài liệu có bản quyền (ví dụ: các bản MOD, game lậu) một cách bất hợp pháp. Luôn tôn trọng luật sở hữu trí tuệ.
+                    </p>
+                </li>
+                <li class="flex items-start p-3 bg-white rounded-lg shadow-md border-l-4 border-safe-green">
+                    <span class="text-xl mr-3 flex-shrink-0">🛑</span>
+                    <p class="text-gray-700 font-medium">
+                        <span class="text-safe-green font-bold">Phòng Chống Tin Giả (Fake News):</span> Trước khi chia sẻ thông tin, hãy kiểm tra nguồn tin. Đừng góp phần lan truyền thông tin sai lệch.
+                    </p>
+                </li>
+            </ul>
+        </section>
+
+        <!-- 4. Phòng Chống Lừa Đảo Trực Tuyến (Phishing) -->
+        <section id="phong-chong-lua-dao" class="mb-16">
+            <h3 class="text-3xl font-bold text-primary-blue mb-6 border-l-4 border-secondary-yellow pl-4">4. Phòng Chống Lừa Đảo Trực Tuyến</h3>
+            <div class="bg-secondary-yellow bg-opacity-20 p-6 rounded-xl shadow-inner border border-secondary-yellow">
+                <p class="text-xl font-bold text-gray-800 mb-4">Các Dấu Hiệu Của Lừa Đảo (Phishing):</p>
+                <ul class="list-disc ml-6 space-y-3 text-gray-700">
+                    <li><span class="font-semibold">Địa chỉ email/website không quen thuộc:</span> Tên miền hơi khác so với tên miền chính thức (ví dụ: `gogle.com` thay vì `google.com`).</li>
+                    <li><span class="font-semibold">Cảm giác cấp bách hoặc đe dọa:</span> Yêu cầu con phải hành động ngay lập tức để tránh bị khóa tài khoản hoặc mất tiền.</li>
+                    <li><span class="font-semibold">Yêu cầu cung cấp thông tin nhạy cảm:</span> Không có tổ chức hợp pháp nào yêu cầu mật khẩu, mã PIN qua email hay tin nhắn.</li>
+                    <li><span class="font-semibold">Lỗi chính tả hoặc ngữ pháp:</span> Các tin nhắn lừa đảo thường có lỗi sai.</li>
+                </ul>
+            </div>
+            <div class="mt-6 flex items-start p-4 bg-white rounded-lg shadow-md">
+                <span class="text-2xl mr-4 text-safe-green flex-shrink-0">💡</span>
+                <div>
+                    <p class="font-semibold text-lg text-gray-800">Quy tắc 3 giây</p>
+                    <p class="text-gray-600 text-sm">Trước khi bấm vào bất cứ thứ gì hay điền thông tin, hãy dừng lại 3 giây và tự hỏi: "Điều này có hợp lý không? Trang web này có phải là thật không?"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phần kết luận và lời khuyên -->
+        <section class="text-center pt-10 border-t border-gray-200">
+            <div class="bg-primary-blue p-6 rounded-xl shadow-lg">
+                <p class="text-xl font-semibold text-white mb-2">Chị tin tưởng vào kiến thức công nghệ thông tin của con.</p>
+                <p class="text-white text-lg">Hãy trở thành một công dân mạng thông thái, vừa bảo vệ mình, vừa giúp đỡ những người xung quanh con nhé!</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Nút cuộn lên đầu trang -->
+    <button id="scrollToTopBtn" class="scroll-to-top bg-safe-green text-white p-3 rounded-full shadow-lg hover:bg-primary-blue transition duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+        </svg>
+    </button>
+
+    <!-- JavaScript cho chức năng cuộn và hiển thị nút -->
+    <script>
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        // Hàm hiển thị/ẩn nút cuộn lên đầu trang
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        };
+
+        // Hàm cuộn lên đầu trang
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+
 </body>
 </html>
