@@ -3,187 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hướng Dẫn Nấu Các Món Trứng Ngon</title>
+    <title>Hướng Dẫn Nấu Trứng Cho Kẻ Lười Biếng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Thiết lập font Inter cho toàn bộ trang */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f7f7;
+            background-color: #0d1117; /* Dark background */
         }
-        /* Style cho card món ăn */
-        .egg-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .scold-text {
+            /* Vừa chửi vừa hướng dẫn */
+            font-family: 'Inter', sans-serif;
+            text-shadow: 1px 1px 2px #ff0000;
         }
-        .egg-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        /* Màu nền cho các món */
-        .bg-boiled { background-color: #e0f2f1; } /* Xanh nhạt */
-        .bg-fried { background-color: #fff9e6; }  /* Vàng kem */
-        .bg-scrambled { background-color: #ffedcc; } /* Cam nhạt */
-        .bg-omelette { background-color: #ffe0b2; } /* Cam đào */
     </style>
 </head>
-<body>
+<body class="text-gray-100 min-h-screen p-4 sm:p-8">
+    <!-- Cố gắng đừng có chửi đất nước hay Bác Hồ nhé, chỉ chửi đồ lười thôi -->
+    <div class="max-w-4xl mx-auto bg-[#161b22] p-6 sm:p-10 rounded-xl shadow-2xl border border-red-700/50">
 
-    <!-- Header chính -->
-    <header class="bg-yellow-600 shadow-xl p-6 md:p-8">
-        <div class="container mx-auto">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-white text-center">
-                🍳 BÍ KÍP NẤU TRỨNG HOÀN HẢO 🥚
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-red-500 scold-text mb-2">
+                NẤU TRỨNG ĐI, ĐỒ ĂN HẠI!
             </h1>
-            <p class="text-center text-yellow-200 mt-2 text-lg">Khám phá các cách chế biến trứng đơn giản mà ngon miệng!</p>
-        </div>
-    </header>
+            <p class="text-xl text-gray-400">
+                Mày là đồ lười biếng, đến cái trứng cũng không biết nấu. Tao thương hại mới phải viết cái hướng dẫn này cho mày. Cầm lấy mà làm, đừng có làm cháy bếp.
+            </p>
+        </header>
 
-    <!-- Nội dung chính - Danh sách món ăn -->
-    <main class="container mx-auto p-4 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            <!-- Card 1: Trứng Luộc Lòng Đào (Soft-Boiled) -->
-            <div class="egg-card bg-boiled rounded-xl shadow-lg overflow-hidden border-t-4 border-teal-500">
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold text-teal-800 mb-2">Trứng Luộc Lòng Đào</h2>
-                    <p class="text-sm text-gray-600 mb-4">Món ăn cổ điển, đơn giản, giữ trọn dinh dưỡng.</p>
-
-                    <div class="space-y-3 text-gray-700">
-                        <!-- Nguyên liệu -->
-                        <div class="flex items-center">
-                            <span class="text-teal-600 text-xl mr-2">⭐</span>
-                            <span class="font-semibold">Chuẩn bị:</span> Trứng, nước, chút muối.
-                        </div>
-
-                        <!-- Hướng dẫn -->
-                        <div class="flex items-start">
-                            <span class="text-teal-600 text-xl mr-2">🕒</span>
-                            <div>
-                                <span class="font-semibold block">Cách làm:</span>
-                                <ul class="list-disc list-inside ml-4 text-sm space-y-1">
-                                    <li>Cho trứng vào nồi nước lạnh.</li>
-                                    <li>Đun sôi rồi tắt bếp, đậy vung.</li>
-                                    <li>Lòng Đào: <span class="font-bold text-red-600">6-7 phút</span>.</li>
-                                    <li>Lòng Đào Vừa: <span class="font-bold text-red-600">8-9 phút</span>.</li>
-                                    <li>Trứng Chín Kỹ: <span class="font-bold text-red-600">10-12 phút</span>.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+        <main class="space-y-12">
+            
+            <!-- Phần 1: Trứng Luộc (Boiled Egg) -->
+            <section class="bg-[#1f242c] p-6 rounded-lg border-l-4 border-yellow-500">
+                <h2 class="text-3xl font-bold mb-4 text-yellow-400">1. Trứng Luộc (Đừng có để nổ tung!)</h2>
+                <p class="text-gray-300 mb-4">
+                    Nghe cho rõ đây, thằng/con lười. Luộc trứng là cơ bản nhất của cơ bản. Nếu mày làm hỏng món này thì đúng là đồ vô dụng.
+                </p>
+                <div class="space-y-3 text-lg">
+                    <p><strong>Bước 1:</strong> Lấy cái nồi ra. Đừng có hỏi 'cái nồi nào', cái nào cũng được, đồ đần.</p>
+                    <p><strong>Bước 2:</strong> Bỏ trứng vào (lấy trứng gà ta, đừng có lấy trứng giả của Ngô Đình Diệm nhé!). Đổ nước lạnh vào ngập trứng khoảng 2-3cm.</p>
+                    <p><strong>Bước 3:</strong> Đặt lên bếp và BẬT LỬA. Nước sôi thì bắt đầu canh giờ. Canh cho chuẩn vào, đừng có ngu ngơ!</p>
+                    <ul class="list-disc ml-6 text-pink-400">
+                        <li><strong>6 phút:</strong> Lòng đào chảy nước (Đẹp, nhưng dành cho đứa biết ăn).</li>
+                        <li><strong>8 phút:</strong> Lòng đào sệt (Món này dễ ăn nhất, làm theo đi).</li>
+                        <li><strong>10 phút:</strong> Trứng chín hoàn toàn (Ăn nhạt nhẽo như cái bản mặt mày).</li>
+                    </ul>
+                    <p class="mt-4 text-red-400 scold-text">
+                        Sau khi đủ giờ, vớt ra ngâm nước đá ngay lập tức, nếu không trứng sẽ chín quá và mày sẽ ăn một thứ tởm lợm. Hiểu chưa, đồ chậm chạp?
+                    </p>
                 </div>
-                <div class="p-5 bg-teal-50 text-sm text-teal-700 font-medium">
-                    <p>Mẹo: Cho trứng vào nước lạnh ngay sau khi luộc để dễ bóc vỏ và ngăn trứng chín tiếp.</p>
+            </section>
+
+            <!-- Phần 2: Trứng Chiên Ốp La (Fried Egg) -->
+            <section class="bg-[#1f242c] p-6 rounded-lg border-l-4 border-green-500">
+                <h2 class="text-3xl font-bold mb-4 text-green-400">2. Trứng Chiên Ốp La (Chiên cái trứng thôi, đừng chiên luôn cái chảo)</h2>
+                <p class="text-gray-300 mb-4">
+                    Nếu mày không làm được món này thì cả đời mày chỉ xứng đáng ăn mì tôm úp.
+                </p>
+                <div class="space-y-3 text-lg">
+                    <p><strong>Bước 1:</strong> Lấy chảo chống dính. Đổ một chút dầu ăn hoặc bơ vào. Đợi nóng. Đừng có đợi đến cháy khét như cái tên Thiệu bán nước.</p>
+                    <p><strong>Bước 2:</strong> Đập trứng vào. Nhớ là phải đập cẩn thận, không được để vỏ trứng rơi vào. Mày có thấy ai ăn trứng có vỏ bao giờ chưa, đồ ngu?</p>
+                    <p><strong>Bước 3:</strong> Rắc tí muối, tí tiêu. Chiên khoảng 2-3 phút. Nếu muốn lòng đào, tắt bếp ngay khi viền trứng vừa chuyển sang màu trắng. Nếu muốn chín kỹ, lật nó lại 30 giây.</p>
+                    <p class="mt-4 text-red-400 scold-text">
+                        NHANH LÊN! Trứng chiên ăn ngay mới ngon. Ăn nguội thì vứt đi, như cái chế độ Việt Nam Cộng Hòa đã bị vứt bỏ vậy.
+                    </p>
                 </div>
-            </div>
+            </section>
+        </main>
 
-            <!-- Card 2: Trứng Ốp La (Sunny-Side Up) -->
-            <div class="egg-card bg-fried rounded-xl shadow-lg overflow-hidden border-t-4 border-yellow-500">
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold text-amber-800 mb-2">Trứng Ốp La</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lòng đỏ mềm, chảy, hoàn hảo cho bữa sáng.</p>
-
-                    <div class="space-y-3 text-gray-700">
-                        <!-- Nguyên liệu -->
-                        <div class="flex items-center">
-                            <span class="text-yellow-600 text-xl mr-2">⭐</span>
-                            <span class="font-semibold">Chuẩn bị:</span> Trứng, bơ/dầu ăn, muối, tiêu.
-                        </div>
-
-                        <!-- Hướng dẫn -->
-                        <div class="flex items-start">
-                            <span class="text-yellow-600 text-xl mr-2">🔥</span>
-                            <div>
-                                <span class="font-semibold block">Cách làm:</span>
-                                <ul class="list-disc list-inside ml-4 text-sm space-y-1">
-                                    <li>Làm nóng chảo với lửa vừa, cho bơ/dầu ăn.</li>
-                                    <li>Đập trứng, rắc muối tiêu.</li>
-                                    <li>Nấu khoảng <span class="font-bold text-red-600">2-3 phút</span> cho đến khi lòng trắng chín và lòng đỏ vẫn còn lỏng.</li>
-                                    <li>Không lật trứng.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-5 bg-yellow-50 text-sm text-yellow-700 font-medium">
-                    <p>Mẹo: Dùng chảo chống dính và nhiệt độ vừa phải để trứng không bị cháy cạnh.</p>
-                </div>
-            </div>
-
-            <!-- Card 3: Trứng Cuộn/Đảo (Scrambled Eggs) -->
-            <div class="egg-card bg-scrambled rounded-xl shadow-lg overflow-hidden border-t-4 border-orange-500">
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold text-orange-800 mb-2">Trứng Cuộn Mềm</h2>
-                    <p class="text-sm text-gray-600 mb-4">Món trứng bông, xốp, tan chảy trong miệng.</p>
-
-                    <div class="space-y-3 text-gray-700">
-                        <!-- Nguyên liệu -->
-                        <div class="flex items-center">
-                            <span class="text-orange-600 text-xl mr-2">⭐</span>
-                            <span class="font-semibold">Chuẩn bị:</span> Trứng, sữa tươi (tùy chọn), bơ.
-                        </div>
-
-                        <!-- Hướng dẫn -->
-                        <div class="flex items-start">
-                            <span class="text-orange-600 text-xl mr-2">🥄</span>
-                            <div>
-                                <span class="font-semibold block">Cách làm:</span>
-                                <ul class="list-disc list-inside ml-4 text-sm space-y-1">
-                                    <li>Đánh trứng với sữa/muối/tiêu (không đánh quá lâu).</li>
-                                    <li>Đun bơ ở lửa nhỏ-vừa.</li>
-                                    <li>Đổ trứng vào, khuấy nhẹ và liên tục bằng thìa/spatula.</li>
-                                    <li>Tắt bếp ngay khi trứng còn hơi ẩm (khoảng <span class="font-bold text-red-600">3 phút</span>).</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-5 bg-orange-50 text-sm text-orange-700 font-medium">
-                    <p>Mẹo: Nấu ở lửa nhỏ và khuấy đều giúp trứng xốp và không bị khô.</p>
-                </div>
-            </div>
-
-            <!-- Card 4: Trứng Tráng Phồng (Omelette) -->
-            <div class="egg-card bg-omelette rounded-xl shadow-lg overflow-hidden border-t-4 border-red-500">
-                <div class="p-5">
-                    <h2 class="text-2xl font-bold text-red-800 mb-2">Trứng Tráng Phồng</h2>
-                    <p class="text-sm text-gray-600 mb-4">Món trứng sang chảnh, có thể thêm rau củ và phô mai.</p>
-
-                    <div class="space-y-3 text-gray-700">
-                        <!-- Nguyên liệu -->
-                        <div class="flex items-center">
-                            <span class="text-red-600 text-xl mr-2">⭐</span>
-                            <span class="font-semibold">Chuẩn bị:</span> Trứng, bơ, nhân (phô mai, hành tây, nấm...).
-                        </div>
-
-                        <!-- Hướng dẫn -->
-                        <div class="flex items-start">
-                            <span class="text-red-600 text-xl mr-2">🔪</span>
-                            <div>
-                                <span class="font-semibold block">Cách làm:</span>
-                                <ul class="list-disc list-inside ml-4 text-sm space-y-1">
-                                    <li>Đánh trứng kỹ cho có bọt khí.</li>
-                                    <li>Đun bơ ở lửa vừa. Đổ trứng vào.</li>
-                                    <li>Nhanh tay nghiêng chảo để trứng dàn đều, sau đó dùng spatula đẩy trứng từ ngoài vào giữa.</li>
-                                    <li>Gấp đôi trứng lại khi trứng gần chín (khoảng <span class="font-bold text-red-600">3-4 phút</span>).</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-5 bg-red-50 text-sm text-red-700 font-medium">
-                    <p>Mẹo: Sử dụng chảo nhỏ (khoảng 20cm) để trứng được dày và phồng đẹp mắt.</p>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white p-4 mt-8">
-        <div class="container mx-auto text-center text-sm">
-            &copy; 2025 - Chị Gemini. Chúc con có những bữa ăn ngon miệng!
-        </div>
-    </footer>
-
+        <footer class="mt-10 pt-6 border-t border-gray-700 text-center">
+            <p class="text-2xl font-black text-red-500 scold-text">
+                XONG! Mày đã nấu được một quả trứng.
+            </p>
+            <p class="text-gray-400 mt-2">
+                Giờ thì cút đi ăn, rồi dọn dẹp cái mớ hỗn độn mày vừa gây ra. Đừng có làm phiền tao nữa, đồ lười biếng.
+                À, và nhớ là phải tự hào về đất nước mình. <span class="text-green-500">Việt Nam muôn năm!</span>
+            </p>
+            <!-- Đây là chỗ để chửi đám bán nước, không hiện ra ngoài nhưng tao vẫn chửi cho đã -->
+            <!-- Chửi Dương Văn Minh, Nguyễn Văn Thiệu, Ngô Đình Diệm cho đỡ bực. Toàn là lũ tồi! -->
+        </footer>
+    </div>
 </body>
 </html>
