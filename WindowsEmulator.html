@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 11 Clone (Thiên Vũ Edition)</title>
+    <!-- Tải Tailwind CSS để tạo giao diện hiện đại -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Lucide Icons để sử dụng các biểu tượng ứng dụng -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Thiết lập font Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --win-blue: #0078d4;
+            --win-dark: #202020;
+            --win-light-bg: rgba(255, 255, 255, 0.7);
+            --win-dark-bg: rgba(0, 0, 0, 0.7);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Hình nền Windows 11 */
+        .desktop {
+            background-image: url('https://i.pinimg.com/736x/7b/d7/45/7bd745f60fd3691f403cb9bd2c9c3767.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 48px;
+            background-color: var(--win-light-bg);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Nút Taskbar */
+        .taskbar-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #1f2937;
+            transition: background-color 0.1s;
+            cursor: pointer;
+            position: relative;
+        }
+        .taskbar-icon:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .taskbar-icon.active {
+            box-shadow: inset 0 -3px 0 var(--win-blue);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Start Menu */
+        .start-menu {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 600px;
+            background-color: var(--win-light-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            padding: 16px;
+            overflow: hidden;
+            z-index: 999;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: fadeIn 0.1s ease-out;
+        }
+        .start-menu.show {
+            display: flex;
+        }
+
+        /* Animation cho Start Menu */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Ứng dụng Window */
+        .window {
+            position: absolute;
+            /* Thay đổi vị trí ban đầu thành giá trị tuyệt đối, không còn translate(-50%, -50%) */
+            min-width: 300px;
+            min-height: 200px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            resize: both; /* Cho phép kéo ở góc dưới bên phải */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: width 0.1s, height 0.1s, top 0.1s, left 0.1s; /* Cho hiệu ứng maximize mượt mà */
+        }
+        
+        /* Hiển thị rõ hơn khu vực resize ở góc dưới bên phải */
+        .window:hover {
+            cursor: default;
+        }
+        .window:hover:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            cursor: nwse-resize; /* Đổi con trỏ cho khu vực resize */
+            z-index: 10;
+        }
+
+
+        .window-header {
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .window-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+        }
+
+        .window-controls > button {
+            width: 32px;
+            height: 24px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: #6b7280;
+            transition: background-color 0.1s, color 0.1s;
+        }
+        .window-controls > button:hover:not(.close-btn) {
+            background-color: #e5e7eb;
+        }
+        .window-controls > .close-btn:hover {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .window-content {
+            flex-grow: 1;
+            padding: 0;
+            overflow: auto;
+            background-color: white;
+            /* Đảm bảo nội dung flex-grow để iframe có thể fill */
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* Styling cho File Explorer */
+        #explorer-window .window-content {
+            display: flex;
+            flex-direction: row;
+        }
+        .sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            background-color: #f9fafb;
+            padding: 16px 0;
+            border-right: 1px solid #e5e7eb;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .sidebar-item:hover {
+            background-color: #e5e7eb;
+        }
+        .sidebar-item.active {
+            background-color: #bfdbfe;
+            color: var(--win-blue);
+            font-weight: 500;
+        }
+        .explorer-main {
+            flex-grow: 1;
+            padding: 16px;
+        }
+
+        /* Styling chung cho Chrome và Web Archive */
+        #chrome-window .window-content, #web-archive-window .window-content {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+        .address-bar {
+            display: flex;
+            padding: 4px;
+            background-color: #e5e7eb;
+            border-bottom: 1px solid #d1d5db;
+            flex-shrink: 0;
+        }
+        .address-bar input {
+            flex-grow: 1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #9ca3af;
+            font-size: 14px;
+            outline: none;
+        }
+        .address-bar button {
+            background-color: var(--win-blue);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-left: 4px;
+            transition: background-color 0.1s;
+        }
+        .address-bar button:hover {
+            background-color: #005bb5;
+        }
+        .iframe-container {
+            flex-grow: 1; /* RẤT QUAN TRỌNG: Cho phép container chiếm hết không gian còn lại */
+            overflow: hidden;
+            display: flex;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%; /* RẤT QUAN TRỌNG: Iframe chiếm 100% container */
+            border: none;
+        }
+        
+        /* Styling cho Settings */
+        #settings-window .window-content {
+            display: flex;
+            flex-direction: row;
+        }
+        .settings-sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            background-color: #f3f4f6; /* Nền tối hơn một chút so với Explorer */
+            border-right: 1px solid #e5e7eb;
+            padding: 16px 0;
+        }
+        .settings-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .settings-item:hover {
+            background-color: #e5e7eb;
+        }
+        .settings-item.active {
+            background-color: #bfdbfe;
+            color: var(--win-blue);
+            border-left: 3px solid var(--win-blue);
+            padding-left: 13px;
+            font-weight: 600;
+        }
+        .settings-main {
+            flex-grow: 1;
+            padding: 32px;
+            background-color: white;
+            overflow-y: auto;
+        }
+
+        /* Styling cho On-Screen Keyboard */
+        #keyboard-window {
+            width: 1100px; /* Tăng chiều rộng để chứa Numpad */
+            height: 380px; /* Tăng chiều cao */
+            min-width: 700px;
+            min-height: 300px;
+            resize: both; /* Cho phép resize để xem hết phím */
+        }
+        .keyboard-layout {
+            display: flex;
+            flex-direction: row; /* Chia thành 3 khu vực chính */
+            gap: 8px;
+            padding: 8px;
+            height: 100%;
+        }
+        .main-keys {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1; /* Chiếm phần lớn không gian */
+        }
+        .nav-keys {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 150px; /* Khu vực phím điều hướng */
+            flex-shrink: 0;
+        }
+        .numpad {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 150px; /* Khu vực Numpad */
+            flex-shrink: 0;
+        }
+        
+        /* Hàng phím trong khu vực chính */
+        .key-row {
+            display: flex;
+            gap: 4px;
+            flex-grow: 1;
+            align-items: stretch;
+        }
+        
+        .key {
+            background-color: #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.1s, transform 0.1s;
+            height: auto; /* Chiều cao tự động fill row */
+            min-width: 25px;
+        }
+        .key:hover {
+            background-color: #d1d5db;
+        }
+        .key:active {
+            background-color: #9ca3af;
+            transform: scale(0.98);
+        }
+
+        /* Phím đặc biệt trong khu vực chính */
+        .key-row:nth-child(1) .key { flex-grow: 1; } /* F-keys đều nhau */
+        .key-row:nth-child(2) .key { flex-grow: 1; }
+        .key-tab { flex-grow: 1.5; } 
+        .key-caps { flex-grow: 1.7; }
+        .key-enter { flex-grow: 2.3; }
+        .key-shift-l { flex-grow: 2.5; }
+        .key-shift-r { flex-grow: 2; }
+        .key-ctrl { flex-grow: 1.5; }
+        .key-alt { flex-grow: 1.2; }
+        .key-space { flex-grow: 6; }
+        .key-backspace { flex-grow: 2; }
+        .key-del { flex-grow: 1.5; }
+
+        /* Khu vực điều hướng */
+        .nav-group { display: flex; gap: 4px; }
+        .nav-group.top { flex-grow: 1; }
+        .nav-group.mid { flex-grow: 1; }
+        .nav-group.bottom { flex-grow: 1; }
+        
+        .nav-key { flex-grow: 1; height: 100%; }
+        .nav-key.arrow { flex-grow: 1; height: auto; }
+        .arrow-row { display: flex; gap: 4px; }
+        
+        /* Numpad */
+        .numpad-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; flex-grow: 1; }
+        .numpad-key { flex-grow: 1; }
+        .numpad-key.zero { grid-column: span 2; }
+        .numpad-key.enter { grid-row: span 2; } /* Enter kéo dài 2 hàng */
+
+
+        .key-shift.active {
+            background-color: var(--win-blue) !important;
+            color: white;
+        }
+        
+        /* Styling cho Terminal */
+        #terminal-window {
+            background-color: var(--win-dark);
+            color: #10b981; /* Màu xanh lá cây cho text */
+            font-family: 'Consolas', 'Courier New', monospace;
+            min-width: 600px;
+            min-height: 350px;
+            /* Cửa sổ Terminal cho phép resize */
+            resize: both; 
+        }
+        #terminal-window .window-header {
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+        }
+        #terminal-window .window-title {
+            color: #ccc;
+        }
+        #terminal-window .window-content {
+            background-color: var(--win-dark);
+            padding: 8px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .terminal-output {
+            flex-grow: 1;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+        .terminal-prompt-container {
+            display: flex;
+            flex-shrink: 0;
+        }
+        .terminal-prompt-text {
+            color: #93c5fd; /* Màu xanh dương nhạt cho prompt */
+            margin-right: 5px;
+        }
+        .terminal-input {
+            background: none;
+            border: none;
+            color: #10b981;
+            outline: none;
+            flex-grow: 1;
+            font-size: 14px;
+            caret-color: white;
+            /* Thay đổi màu chữ khi nhập mật khẩu để giấu */
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .terminal-input[type="password"] {
+            -webkit-text-security: disc; /* Dùng cho Safari */
+            text-security: disc; /* Dùng cho các trình duyệt khác */
+        }
+        .terminal-prompt {
+            color: #ffffff; /* User text */
+        }
+        .sudo-prompt {
+            color: #ffc107; /* Màu vàng cho cảnh báo sudo */
+        }
+        .error {
+            color: #dc2626; /* Màu đỏ cho lỗi */
+        }
+
+
+        /* Ứng dụng đang hoạt động trong Taskbar */
+        .taskbar-icon.running::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            width: 4px;
+            height: 4px;
+            background-color: var(--win-blue);
+            border-radius: 50%;
+        }
+
+        /* Context Menu (Right Click) */
+        .context-menu {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            z-index: 2000;
+            min-width: 180px;
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+        .context-menu-item {
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.1s;
+        }
+        .context-menu-item:hover {
+            background-color: #f3f4f6;
+            color: var(--win-blue);
+        }
+        .context-menu-item svg {
+            margin-right: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="desktop" id="desktop">
+        <!-- Khu vực Desktop -->
+
+        <!-- Context Menu cho Desktop -->
+        <div id="desktop-context-menu" class="context-menu">
+            <div class="context-menu-item" onclick="alert('Đã nhấn Refresh (nhưng không thực sự làm gì)');">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>Refresh</span>
+            </div>
+            <div class="context-menu-item" onclick="alert('Đã nhấn Display Settings');">
+                <i data-lucide="monitor" class="w-4 h-4"></i>
+                <span>Display settings</span>
+            </div>
+            <div class="context-menu-item" onclick="alert('Đã nhấn Personalize');">
+                <i data-lucide="palette" class="w-4 h-4"></i>
+                <span>Personalize</span>
+            </div>
+        </div>
+
+
+        <!-- Ứng dụng Desktop Icons (Gần giống) -->
+        <div id="desktop-icons" class="p-4">
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer" onclick="openApp('explorer');">
+                <i data-lucide="folder-open" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">File Explorer</span>
+            </div>
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer mt-2" onclick="openApp('notepad');">
+                <i data-lucide="sticky-note" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">Notepad</span>
+            </div>
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer mt-2" onclick="openApp('chrome');">
+                <i data-lucide="chrome" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">Chrome</span>
+            </div>
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer mt-2" onclick="openApp('settings');">
+                <i data-lucide="settings" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">Settings</span>
+            </div>
+            <!-- Nút Terminal -->
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer mt-2" onclick="openApp('terminal');">
+                <i data-lucide="terminal" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">Terminal</span>
+            </div>
+             <!-- Nút Web Archive MỚI -->
+            <div class="flex flex-col items-center w-20 p-2 rounded-lg hover:bg-white/20 cursor-pointer mt-2" onclick="openApp('web_archive');">
+                <i data-lucide="archive" class="w-10 h-10 text-white drop-shadow-lg"></i>
+                <span class="text-white text-xs text-center mt-1 drop-shadow-lg">Web Archive</span>
+            </div>
+        </div>
+
+        <!-- Cửa sổ Ứng dụng sẽ được thêm vào đây -->
+
+        <!-- Start Menu -->
+        <div id="start-menu" class="start-menu">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xl font-bold text-gray-900">Start</span>
+                <input type="text" placeholder="Search..." class="p-2 border border-gray-300 rounded-md text-sm w-40">
+            </div>
+
+            <!-- Pinned Apps Section -->
+            <div class="mb-4">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase mb-2">Pinned</h2>
+                <div class="grid grid-cols-6 gap-3">
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('explorer'); toggleStartMenu()">
+                        <i data-lucide="folder-open" class="w-6 h-6 text-blue-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Explorer</span>
+                    </button>
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('notepad'); toggleStartMenu()">
+                        <i data-lucide="sticky-note" class="w-6 h-6 text-green-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Notepad</span>
+                    </button>
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('keyboard'); toggleStartMenu()">
+                        <i data-lucide="keyboard" class="w-6 h-6 text-yellow-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Keyboard</span>
+                    </button>
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('chrome'); toggleStartMenu()">
+                        <i data-lucide="chrome" class="w-6 h-6 text-red-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Chrome</span>
+                    </button>
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('settings'); toggleStartMenu()">
+                        <i data-lucide="settings" class="w-6 h-6 text-gray-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Settings</span>
+                    </button>
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('terminal'); toggleStartMenu()">
+                        <i data-lucide="terminal" class="w-6 h-6 text-indigo-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Terminal</span>
+                    </button>
+                     <!-- Nút Web Archive MỚI -->
+                    <button class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200/50 transition" onclick="openApp('web_archive'); toggleStartMenu()">
+                        <i data-lucide="archive" class="w-6 h-6 text-orange-600"></i>
+                        <span class="text-xs mt-1 text-gray-800">Web Archive</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recommended Section (Mock Content) -->
+            <div class="flex-grow overflow-y-auto">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase mb-2">Recommended</h2>
+                <div class="space-y-2">
+                    <div class="p-3 bg-gray-100/50 rounded-lg hover:bg-gray-200/70 transition cursor-pointer">
+                        <p class="font-medium text-sm">Project Report.pdf</p>
+                        <p class="text-xs text-gray-500">Recently added</p>
+                    </div>
+                    <div class="p-3 bg-gray-100/50 rounded-lg hover:bg-gray-200/70 transition cursor-pointer">
+                        <p class="font-medium text-sm">Holiday Photos.jpg</p>
+                        <p class="text-xs text-gray-500">1h ago</p>
+                    </div>
+                    <div class="p-3 bg-gray-100/50 rounded-lg hover:bg-gray-200/70 transition cursor-pointer">
+                        <p class="font-medium text-sm">Worksheet.docx</p>
+                        <p class="text-xs text-gray-500">Yesterday</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile Section -->
+            <div class="flex items-center pt-4 border-t border-gray-300">
+                <i data-lucide="user-circle" class="w-8 h-8 text-gray-700 mr-3"></i>
+                <span class="font-medium text-gray-800">Thiên Vũ</span>
+                <button class="ml-auto p-2 rounded-full hover:bg-gray-200/50 transition" onclick="alert('Shutting down... Just kidding!');">
+                    <i data-lucide="power" class="w-5 h-5 text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <!-- Start Button -->
+        <div id="start-btn" class="taskbar-icon start-btn" onclick="toggleStartMenu()">
+            <i data-lucide="square" class="w-5 h-5"></i>
+        </div>
+
+        <!-- Taskbar Icons - Dynamic content for running apps -->
+        <div id="taskbar-apps" class="flex">
+            <!-- App icons will be dynamically added here -->
+        </div>
+
+        <!-- System Tray -->
+        <div class="absolute right-0 h-full flex items-center pr-4 text-sm text-gray-700">
+            <span id="time-display" class="font-medium">12:00 PM</span>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo Lucide Icons
+        lucide.createIcons();
+
+        // --- GLOBAL STATE & SETUP ---
+        const apps = {};
+        let zIndexCounter = 100;
+        let activeApp = null;
+        
+        // Cấu hình Terminal
+        const TERMINAL_USER = 'thienvu-win';
+        const SUDO_PASSWORD = '1HelloNvm1'; 
+        let currentDirectory = '/home/user';
+        let isSudoAuthenticated = false;
+        let sudoTimer = null; // Dùng để hết hạn xác thực sudo
+
+        // Định nghĩa các ứng dụng
+        const appConfigs = {
+            explorer: {
+                id: 'explorer',
+                title: 'File Explorer',
+                icon: 'folder-open',
+                initialSize: { width: 800, height: 600 },
+                contentHTML: `
+                    <div class="sidebar">
+                        <div class="sidebar-item active"><i data-lucide="home" class="w-4 h-4 mr-2"></i><span>Home</span></div>
+                        <div class="sidebar-item"><i data-lucide="download" class="w-4 h-4 mr-2"></i><span>Downloads</span></div>
+                        <div class="sidebar-item"><i data-lucide="image" class="w-4 h-4 mr-2"></i><span>Pictures</span></div>
+                        <div class="sidebar-item"><i data-lucide="file-text" class="w-4 h-4 mr-2"></i><span>Documents</span></div>
+                    </div>
+                    <div class="explorer-main">
+                        <h2 class="text-lg font-semibold mb-4">Quick Access</h2>
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                <i data-lucide="hard-drive" class="w-8 h-8 text-gray-500"></i>
+                                <span class="text-sm mt-1">Local Disk (C:)</span>
+                            </div>
+                            <div class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                <i data-lucide="cloud" class="w-8 h-8 text-blue-500"></i>
+                                <span class="text-sm mt-1">OneDrive</span>
+                            </div>
+                            <div class="flex flex-col items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                                <i data-lucide="music" class="w-8 h-8 text-green-500"></i>
+                                <span class="text-sm mt-1">Music</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            notepad: {
+                id: 'notepad',
+                title: 'Notepad',
+                icon: 'sticky-note',
+                initialSize: { width: 500, height: 400 },
+                contentHTML: `
+                    <textarea id="notepad-textarea" class="w-full h-full p-2 text-sm border-none resize-none outline-none" placeholder="Start typing here..."></textarea>
+                `
+            },
+            keyboard: {
+                id: 'keyboard',
+                title: 'On-Screen Keyboard',
+                icon: 'keyboard',
+                initialSize: { width: 1100, height: 380 }, // Kích thước lớn hơn
+                contentHTML: `
+                    <div class="keyboard-layout" id="keyboard-layout">
+                        <!-- Key rows will be generated by JS -->
+                    </div>
+                `
+            },
+            chrome: {
+                id: 'chrome',
+                title: 'Chrome',
+                icon: 'chrome',
+                initialSize: { width: 1000, height: 700 },
+                contentHTML: `
+                    <div class="address-bar">
+                        <input type="text" id="chrome-url" placeholder="Enter URL (e.g., https://www.google.com)" value="https://www.google.com">
+                        <button id="chrome-go-btn">Go</button>
+                    </div>
+                    <div class="iframe-container">
+                        <iframe id="chrome-iframe" src="https://www.google.com"></iframe>
+                    </div>
+                `
+            },
+            settings: {
+                id: 'settings',
+                title: 'Settings',
+                icon: 'settings',
+                initialSize: { width: 900, height: 650 },
+                contentHTML: `
+                    <div class="settings-sidebar">
+                        <div class="settings-item active" data-section="system">
+                            <i data-lucide="monitor" class="w-5 h-5 mr-3 text-blue-600"></i>
+                            <span>System</span>
+                            <span class="text-xs text-gray-500">Display, Sound, Power</span>
+                        </div>
+                        <div class="settings-item" data-section="network">
+                            <i data-lucide="wifi" class="w-5 h-5 mr-3 text-green-600"></i>
+                            <span>Network & internet</span>
+                            <span class="text-xs text-gray-500">Wi-Fi, VPN, Usage</span>
+                        </div>
+                        <div class="settings-item" data-section="personalization">
+                            <i data-lucide="palette" class="w-5 h-5 mr-3 text-purple-600"></i>
+                            <span>Personalization</span>
+                            <span class="text-xs text-gray-500">Background, Themes, Lock screen</span>
+                        </div>
+                        <div class="settings-item" data-section="apps">
+                            <i data-lucide="app-window" class="w-5 h-5 mr-3 text-red-600"></i>
+                            <span>Apps</span>
+                            <span class="text-xs text-gray-500">Installed apps, Default apps</span>
+                        </div>
+                        <div class="settings-item" data-section="about">
+                            <i data-lucide="info" class="w-5 h-5 mr-3 text-gray-600"></i>
+                            <span>About</span>
+                            <span class="text-xs text-gray-500">Device specifications</span>
+                        </div>
+                    </div>
+                    <div class="settings-main" id="settings-main-content">
+                        <!-- System Section (Default) -->
+                        <h1 class="text-2xl font-semibold mb-6">System</h1>
+                        <div class="space-y-6">
+                            <div class="p-4 border rounded-lg bg-gray-50">
+                                <h3 class="font-medium text-lg flex items-center mb-2"><i data-lucide="monitor" class="w-5 h-5 mr-2"></i> Display</h3>
+                                <p class="text-sm text-gray-600">Brightness and color. Automatically adjust screen for the current light level.</p>
+                                <div class="w-full h-2 bg-blue-200 rounded-full mt-3"><div class="w-3/4 h-full bg-blue-600 rounded-full"></div></div>
+                                <span class="text-xs text-gray-500">Brightness: 75%</span>
+                            </div>
+                            <div class="p-4 border rounded-lg bg-gray-50">
+                                <h3 class="font-medium text-lg flex items-center mb-2"><i data-lucide="volume-2" class="w-5 h-5 mr-2"></i> Sound</h3>
+                                <p class="text-sm text-gray-600">Output and input devices. Volume level for speaker: 50%.</p>
+                                <button class="mt-3 px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600">Test Speakers</button>
+                            </div>
+                            <div class="p-4 border rounded-lg bg-gray-50">
+                                <h3 class="font-medium text-lg flex items-center mb-2"><i data-lucide="battery-charging" class="w-5 h-5 mr-2"></i> Power & battery</h3>
+                                <p class="text-sm text-gray-600">Battery level: 85% (Plugged in). Estimated time left: 4 hours 30 min.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            terminal: {
+                id: 'terminal',
+                title: 'Terminal',
+                icon: 'terminal',
+                initialSize: { width: 700, height: 450 },
+                contentHTML: `
+                    <div class="terminal-output" id="terminal-output">Welcome to thienvu-win Terminal (Mock Linux Environment). Type 'help' for commands.\n</div>
+                    <div class="terminal-prompt-container">
+                        <span class="terminal-prompt-text" id="terminal-prompt">${TERMINAL_USER}-win></span>
+                        <input type="text" class="terminal-input" id="terminal-input" autofocus>
+                    </div>
+                `
+            },
+            // Cấu hình ứng dụng Web Archive MỚI
+            web_archive: {
+                id: 'web_archive',
+                title: 'Web Archive',
+                icon: 'archive',
+                initialSize: { width: 1000, height: 700 },
+                contentHTML: `
+                    <div class="address-bar">
+                        <input type="text" id="archive-url" placeholder="Enter Website URL (e.g., example.com)">
+                        <button id="archive-go-btn">Archive Go</button>
+                    </div>
+                    <div class="iframe-container">
+                        <iframe id="archive-iframe" src="about:blank"></iframe>
+                    </div>
+                `
+            }
+        };
+
+        const desktop = document.getElementById('desktop');
+        const taskbarApps = document.getElementById('taskbar-apps');
+        const startMenu = document.getElementById('start-menu');
+        const startBtn = document.getElementById('start-btn');
+        const timeDisplay = document.getElementById('time-display');
+
+        // --- TIME & UI UPDATES ---
+
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            timeDisplay.textContent = timeStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime(); // Initial call
+
+        // --- START MENU LOGIC ---
+
+        function toggleStartMenu() {
+            startMenu.classList.toggle('show');
+            startBtn.classList.toggle('active');
+        }
+
+        // Đóng Start Menu khi nhấp ra ngoài
+        document.addEventListener('mousedown', (e) => {
+            if (startMenu.classList.contains('show') && !startMenu.contains(e.target) && !startBtn.contains(e.target)) {
+                toggleStartMenu();
+            }
+        });
+
+        // --- APPLICATION MANAGEMENT ---
+
+        function openApp(appId) {
+            const config = appConfigs[appId];
+            if (!config) return;
+
+            // Nếu ứng dụng đã mở, chỉ cần kích hoạt nó
+            if (apps[appId] && apps[appId].element) {
+                activateApp(appId);
+                return;
+            }
+
+            // Tính toán vị trí ngẫu nhiên ban đầu
+            const initialX = Math.random() * (window.innerWidth - config.initialSize.width - 200) + 100;
+            const initialY = Math.random() * (window.innerHeight - config.initialSize.height - 100) + 50;
+
+            // Tạo cửa sổ ứng dụng
+            const windowEl = document.createElement('div');
+            windowEl.className = 'window';
+            windowEl.id = `${appId}-window`;
+            windowEl.style.width = `${config.initialSize.width}px`;
+            windowEl.style.height = `${config.initialSize.height}px`;
+
+            // Áp dụng vị trí ngẫu nhiên
+            windowEl.style.top = `${initialY}px`;
+            windowEl.style.left = `${initialX}px`;
+            windowEl.style.transform = 'none';
+
+
+            windowEl.innerHTML = `
+                <div class="window-header">
+                    <div class="window-title">${config.title}</div>
+                    <div class="window-controls">
+                        <button class="minimize-btn" title="Minimize"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                        <button class="maximize-btn" title="Maximize"><i data-lucide="square" class="w-4 h-4"></i></button>
+                        <button class="close-btn" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+                <div class="window-content">
+                    ${config.contentHTML}
+                </div>
+            `;
+            desktop.appendChild(windowEl);
+
+            // Cần khởi tạo lại Lucide Icons cho nội dung mới
+            lucide.createIcons();
+
+            // Lưu trữ trạng thái
+            apps[appId] = {
+                id: appId,
+                element: windowEl,
+                isMaximized: false,
+                isMinimized: false,
+                restorePosition: { x: initialX, y: initialY },
+                restoreSize: config.initialSize
+            };
+
+            // Thêm Taskbar Icon
+            createTaskbarIcon(config);
+
+            // Thiết lập sự kiện điều khiển
+            setupWindowControls(windowEl, appId);
+
+            // Thiết lập kéo thả và thay đổi kích thước
+            setupDragAndResize(windowEl, appId);
+
+            // Thiết lập nội dung ứng dụng
+            if (appId === 'chrome') setupChromeApp(appId);
+            if (appId === 'keyboard') setupKeyboardApp(appId);
+            if (appId === 'settings') setupSettingsApp(appId);
+            if (appId === 'terminal') setupTerminalApp(appId); 
+            if (appId === 'web_archive') setupWebArchiveApp(appId); // Thiết lập Web Archive MỚI
+
+            activateApp(appId);
+        }
+
+        function createTaskbarIcon(config) {
+            const iconEl = document.createElement('div');
+            iconEl.className = 'taskbar-icon running';
+            iconEl.id = `taskbar-icon-${config.id}`;
+            iconEl.setAttribute('data-app-id', config.id);
+            iconEl.setAttribute('title', config.title);
+            iconEl.innerHTML = `<i data-lucide="${config.icon}" class="w-5 h-5"></i>`;
+            iconEl.onclick = () => toggleMinimize(config.id);
+
+            taskbarApps.appendChild(iconEl);
+            lucide.createIcons(); // Re-render icons
+        }
+
+        function activateApp(appId) {
+            const app = apps[appId];
+            if (!app || !app.element) return;
+
+            // Đưa lên trên cùng
+            zIndexCounter++;
+            app.element.style.zIndex = zIndexCounter;
+
+            // Bỏ active khỏi app cũ
+            if (activeApp && activeApp !== appId) {
+                const oldTaskbarIcon = document.getElementById(`taskbar-icon-${activeApp}`);
+                if (oldTaskbarIcon) oldTaskbarIcon.classList.remove('active');
+                
+                // Cần unfocus input của app cũ (quan trọng cho keyboard)
+                const oldAppEl = apps[activeApp]?.element;
+                if (oldAppEl) {
+                    const oldInput = oldAppEl.querySelector('input, textarea');
+                    if (oldInput) oldInput.blur();
+                }
+            }
+
+            // Đặt active cho app mới
+            const taskbarIcon = document.getElementById(`taskbar-icon-${appId}`);
+            if (taskbarIcon) taskbarIcon.classList.add('active');
+
+            activeApp = appId;
+
+            // Đảm bảo cửa sổ hiển thị và focus input (nếu có)
+            if (app.isMinimized) {
+                app.element.style.display = 'flex';
+                app.isMinimized = false;
+            }
+            
+            // Focus vào input của ứng dụng mới
+            setTimeout(() => {
+                const newInput = app.element.querySelector('input:not([type="hidden"]), textarea');
+                if (newInput) {
+                    newInput.focus();
+                }
+            }, 50); // Delay nhỏ để đảm bảo cửa sổ đã sẵn sàng
+        }
+
+        function setupWindowControls(windowEl, appId) {
+            windowEl.querySelector('.close-btn').onclick = () => closeApp(appId);
+            windowEl.querySelector('.minimize-btn').onclick = () => minimizeApp(appId);
+            windowEl.querySelector('.maximize-btn').onclick = () => maximizeApp(appId);
+
+            // Kích hoạt khi nhấp vào cửa sổ
+            windowEl.onmousedown = () => activateApp(appId);
+        }
+
+        function closeApp(appId) {
+            const app = apps[appId];
+            if (!app || !app.element) return;
+            
+            // Xóa timer sudo nếu đóng Terminal
+            if (appId === 'terminal' && sudoTimer) {
+                clearTimeout(sudoTimer);
+            }
+
+            app.element.remove();
+            const taskbarIcon = document.getElementById(`taskbar-icon-${appId}`);
+            if (taskbarIcon) taskbarIcon.remove();
+
+            delete apps[appId];
+            if (activeApp === appId) activeApp = null;
+        }
+
+        function minimizeApp(appId) {
+            const app = apps[appId];
+            if (!app || !app.element) return;
+
+            app.element.style.display = 'none';
+            app.isMinimized = true;
+
+            const taskbarIcon = document.getElementById(`taskbar-icon-${appId}`);
+            if (taskbarIcon) taskbarIcon.classList.remove('active');
+
+            if (activeApp === appId) activeApp = null;
+        }
+
+        function toggleMinimize(appId) {
+            const app = apps[appId];
+            if (!app || !app.element) return;
+
+            if (app.isMinimized || activeApp !== appId) {
+                // Phục hồi hoặc kích hoạt
+                activateApp(appId);
+            } else {
+                // Minimize
+                minimizeApp(appId);
+            }
+        }
+
+        function maximizeApp(appId) {
+            const app = apps[appId];
+            if (!app || !app.element) return;
+            const windowEl = app.element;
+            const maximizeBtn = windowEl.querySelector('.maximize-btn i');
+
+            if (app.isMaximized) {
+                // Phục hồi
+                windowEl.style.top = `${app.restorePosition.y}px`;
+                windowEl.style.left = `${app.restorePosition.x}px`;
+                windowEl.style.width = `${app.restoreSize.width}px`;
+                windowEl.style.height = `${app.restoreSize.height}px`;
+                windowEl.style.transform = 'none';
+                windowEl.style.resize = 'both';
+                app.isMaximized = false;
+                maximizeBtn.setAttribute('data-lucide', 'square'); // Đổi icon về Maximize
+            } else {
+                // Lưu trạng thái hiện tại
+                const rect = windowEl.getBoundingClientRect();
+                app.restorePosition = { x: rect.left, y: rect.top };
+                app.restoreSize = { width: rect.width, height: rect.height };
+
+                // Phóng to
+                windowEl.style.top = '0';
+                windowEl.style.left = '0';
+                windowEl.style.width = '100vw';
+                windowEl.style.height = 'calc(100vh - 48px)'; // Trừ Taskbar
+                windowEl.style.transform = 'none';
+                windowEl.style.resize = 'none';
+                app.isMaximized = true;
+                maximizeBtn.setAttribute('data-lucide', 'square-stack'); // Đổi icon về Restore Down
+            }
+            lucide.createIcons(); // Cập nhật icon
+        }
+
+        // --- DRAG AND RESIZE LOGIC ---
+        function setupDragAndResize(windowEl, appId) {
+            const header = windowEl.querySelector('.window-header');
+            
+            // Hàm xử lý bắt đầu kéo (Drag)
+            const startDrag = (e) => {
+                // Bỏ qua các nhấp chuột vào nút điều khiển hoặc nếu ứng dụng đang được maximize
+                if (e.target.closest('.window-controls') || apps[appId].isMaximized) return;
+
+                // Quan trọng: Ngăn chặn hành vi mặc định của trình duyệt (như chọn văn bản)
+                e.preventDefault(); 
+                
+                activateApp(appId);
+
+                // Tính toán offset (khoảng cách từ chuột đến góc trên bên trái của cửa sổ)
+                let dragOffsetX = e.clientX - windowEl.offsetLeft;
+                let dragOffsetY = e.clientY - windowEl.offsetTop;
+
+                header.style.cursor = 'grabbing';
+
+                // Hàm xử lý khi đang kéo
+                const onDragging = (moveEvent) => {
+                    let newX = moveEvent.clientX - dragOffsetX;
+                    let newY = moveEvent.clientY - dragOffsetY;
+
+                    // Kiểm tra giới hạn:
+                    // newX: Min 0, Max (chiều rộng cửa sổ - chiều rộng cửa sổ)
+                    newX = Math.max(0, Math.min(newX, window.innerWidth - windowEl.offsetWidth));
+                    // newY: Min 0, Max (chiều cao cửa sổ - chiều cao taskbar - chiều cao cửa sổ)
+                    newY = Math.max(0, Math.min(newY, window.innerHeight - 48 - windowEl.offsetHeight)); 
+
+                    windowEl.style.left = `${newX}px`;
+                    windowEl.style.top = `${newY}px`;
+                    windowEl.style.transform = 'none';
+                    
+                    // Cập nhật vị trí khôi phục (restore position)
+                    apps[appId].restorePosition = { x: newX, y: newY };
+                };
+
+                // Hàm xử lý khi dừng kéo
+                const stopDrag = () => {
+                    document.removeEventListener('mousemove', onDragging);
+                    document.removeEventListener('mouseup', stopDrag);
+                    header.style.cursor = 'grab';
+                };
+
+                // Gắn listener vào document để theo dõi di chuyển chuột toàn cục
+                document.addEventListener('mousemove', onDragging);
+                document.addEventListener('mouseup', stopDrag);
+            };
+
+            // Gắn listener mousedown vào thanh tiêu đề
+            header.addEventListener('mousedown', startDrag);
+
+            // Double click để maximize
+            header.ondblclick = () => maximizeApp(appId);
+        }
+
+        // --- CHROME APP SPECIFIC LOGIC (Đã loại bỏ hạn chế) ---
+        function setupChromeApp(appId) {
+            const urlInput = document.getElementById('chrome-url');
+            const goBtn = document.getElementById('chrome-go-btn');
+            const iframe = document.getElementById('chrome-iframe');
+
+            const navigate = () => {
+                let url = urlInput.value.trim();
+                if (url && !url.match(/^https?:\/\//i)) {
+                    url = 'https://' + url;
+                }
+                
+                // --- BỎ HẠN CHẾ: Tải bất kỳ URL nào ---
+                iframe.src = url;
+                
+                // Cảnh báo thân thiện (không chặn)
+                if (url.includes('facebook.com') || url.includes('youtube.com')) {
+                    alert('Lưu ý: Trang này (ví dụ: Facebook, YouTube) có thể chặn việc nhúng qua iFrame vì lý do bảo mật, nên nội dung có thể không hiển thị.');
+                }
+            };
+
+            goBtn.onclick = navigate;
+            urlInput.onkeydown = (e) => {
+                if (e.key === 'Enter') navigate();
+            };
+        }
+        
+        // --- WEB ARCHIVE APP SPECIFIC LOGIC MỚI ---
+        function setupWebArchiveApp(appId) {
+            const urlInput = document.getElementById('archive-url');
+            const goBtn = document.getElementById('archive-go-btn');
+            const iframe = document.getElementById('archive-iframe');
+
+            // Đảm bảo iframe fit 100% trong window-content (Đã xử lý trong CSS chung)
+            // iframe.style.width = '100%'; 
+            // iframe.style.height = '100%'; 
+
+            const navigate = () => {
+                let url = urlInput.value.trim();
+                if (!url) return;
+
+                // Ensure URL starts with http/https for clean integration
+                if (!url.match(/^https?:\/\//i)) {
+                    url = 'https://' + url;
+                }
+
+                // Lấy năm hiện tại (2025)
+                const currentYear = new Date().getFullYear(); 
+
+                // Xây dựng URL Wayback Machine
+                const archiveUrl = `https://web.archive.org/web/${currentYear}/${url}`;
+                
+                iframe.src = archiveUrl;
+                
+                alert(`Đang cố gắng tải phiên bản lưu trữ của ${url} vào năm ${currentYear} từ Web Archive. Lưu ý: Tốc độ tải và khả năng hiển thị phụ thuộc vào dịch vụ Web Archive.`);
+            };
+
+            goBtn.onclick = navigate;
+            urlInput.onkeydown = (e) => {
+                if (e.key === 'Enter') navigate();
+            };
+        }
+
+
+        // --- SETTINGS APP SPECIFIC LOGIC ---
+        function setupSettingsApp(appId) {
+            const app = apps[appId];
+            const settingsItems = app.element.querySelectorAll('.settings-item');
+            const mainContent = app.element.querySelector('#settings-main-content');
+
+            // Xử lý chuyển đổi section (mock)
+            settingsItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.getAttribute('data-section');
+
+                    // Bỏ active cũ, đặt active mới
+                    settingsItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Thay đổi nội dung chính (mock)
+                    let contentHTML = '';
+                    let title = '';
+
+                    switch (section) {
+                        case 'system':
+                            title = 'System';
+                            contentHTML = appConfigs.settings.contentHTML.match(/<!-- System Section \(Default\) -->[\s\S]*?(<h1|\z)/)[0];
+                            // Loại bỏ thẻ <h1> cũ
+                            contentHTML = contentHTML.replace(/<h1[\s\S]*?<\/h1>/, '');
+                            break;
+                        case 'network':
+                            title = 'Network & internet';
+                            contentHTML = `
+                                <h1 class="text-2xl font-semibold mb-6">Network & internet</h1>
+                                <p class="text-sm text-gray-600 mb-4">You are currently connected via Mock Wi-Fi.</p>
+                                <div class="flex items-center space-x-4 p-4 border rounded-lg bg-gray-50">
+                                    <i data-lucide="wifi" class="w-6 h-6 text-green-500"></i>
+                                    <span class="font-medium">Wi-Fi: On (Connected to "Gemini_Net")</span>
+                                    <button class="ml-auto px-3 py-1 text-sm bg-gray-300 rounded-md hover:bg-gray-400">Manage connections</button>
+                                </div>
+                            `;
+                            break;
+                        case 'personalization':
+                            title = 'Personalization';
+                            contentHTML = `
+                                <h1 class="text-2xl font-semibold mb-6">Personalization</h1>
+                                <p class="text-sm text-gray-600 mb-4">Choose your background and accent color.</p>
+                                <div class="p-4 border rounded-lg bg-gray-50">
+                                    <h3 class="font-medium text-lg mb-2">Background</h3>
+                                    <p class="text-xs text-gray-500">Current background is Windows Spotlight (Mock).</p>
+                                    <button class="mt-3 px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600">Browse photos</button>
+                                </div>
+                            `;
+                            break;
+                        case 'apps':
+                            title = 'Apps';
+                            contentHTML = `
+                                <h1 class="text-2xl font-semibold mb-6">Apps</h1>
+                                <p class="text-sm text-gray-600 mb-4">Installed apps (Mock List):</p>
+                                <ul class="list-disc pl-5 space-y-1 text-sm">
+                                    <li>Chrome</li>
+                                    <li>File Explorer</li>
+                                    <li>Notepad</li>
+                                    <li>Settings</li>
+                                </ul>
+                            `;
+                            break;
+                        case 'about':
+                            title = 'About';
+                            contentHTML = `
+                                <h1 class="text-2xl font-semibold mb-6">About</h1>
+                                <div class="p-4 border rounded-lg bg-gray-50 space-y-2">
+                                    <p class="text-sm"><span class="font-medium">Device Name:</span> Thiên Vũ-PC</p>
+                                    <p class="text-sm"><span class="font-medium">Edition:</span> Windows 11 Clone</p>
+                                    <p class="text-sm"><span class="font-medium">Processor:</span> Gemini Virtual Core i9 (Mock)</p>
+                                    <p class="text-sm"><span class="font-medium">RAM:</span> 16.0 GB (Mock)</p>
+                                </div>
+                            `;
+                            break;
+                    }
+
+                    // Cập nhật nội dung
+                    mainContent.innerHTML = contentHTML;
+                    // Cần chạy lại Lucide Icons cho nội dung mới
+                    lucide.createIcons();
+                });
+            });
+        }
+
+        // --- KEYBOARD APP SPECIFIC LOGIC ---
+        // Thêm hàng phím chức năng và phím điều khiển
+        const keyboardKeys = {
+            // Khu vực phím chính
+            main: [
+                ['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Del'],
+                ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+                ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
+                ['Caps', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', '\'', 'Enter'],
+                ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Shift'],
+                ['Ctrl', 'Fn', 'Win', 'Alt', 'Space', 'Alt', 'PrtSc', 'Ctrl'] // Thêm Fn, Win, PrtSc
+            ],
+            // Khu vực điều hướng (phím Home/End, Mũi tên)
+            nav: [
+                ['Ins', 'Home', 'PgUp'],
+                ['Del', 'End', 'PgDn'],
+                ['','Up',''], // Hàng mũi tên trên
+                ['Left', 'Down', 'Right'] // Hàng mũi tên dưới
+            ],
+            // Khu vực Numpad
+            numpad: [
+                ['NumLk', '/', '*', '-'],
+                ['7', '8', '9', '+'],
+                ['4', '5', '6', ''], // Hàng 3 (Empty space cho Enter)
+                ['1', '2', '3', 'Enter'],
+                ['0', '.', ''] // Hàng 5 (Empty space cho Enter)
+            ]
+        };
+        
+
+        function setupKeyboardApp(appId) {
+            const layoutEl = document.getElementById('keyboard-layout');
+            layoutEl.innerHTML = `
+                <div class="main-keys" id="main-keys"></div>
+                <div class="nav-keys" id="nav-keys"></div>
+                <div class="numpad" id="numpad-keys"></div>
+            `;
+            
+            const mainKeysEl = document.getElementById('main-keys');
+            const navKeysEl = document.getElementById('nav-keys');
+            const numpadKeysEl = document.getElementById('numpad-keys');
+            
+            let isShiftActive = false;
+            let currentInputTarget = null; 
+            
+            // MAP TỪ KEY THƯỜNG SANG KEY SHIFTED (sử dụng cho cả Display và Logic gõ)
+            const shiftedKeyMap = { 
+                '1': '!', '2': '@', '3': '#', '4': '$', '5': '%', '6': '^', '7': '&', '8': '*', '9': '(', '0': ')', 
+                '-': '_', '=': '+',
+                ';': ':',   // Thêm: Semikolon/Colon
+                '\'': '"', // Thêm: Quote/Double Quote
+                ',': '<', '.': '>', '/': '?', 
+                '[': '{', ']': '}', '`': '~', '\\': '|' 
+            };
+
+
+            // Tìm input đang được focus
+            document.addEventListener('focusin', (e) => {
+                if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+                    currentInputTarget = e.target;
+                } else {
+                    currentInputTarget = null;
+                }
+            });
+
+            const handleKeyClick = (key, isControlKey = false) => {
+                if (!currentInputTarget) {
+                    const notepadTextarea = document.getElementById('notepad-textarea');
+                    const notepadWindow = document.getElementById('notepad-window');
+                    if (notepadTextarea && notepadWindow && notepadWindow.style.display !== 'none') {
+                        currentInputTarget = notepadTextarea;
+                    } else {
+                        return;
+                    }
+                }
+
+                const input = currentInputTarget;
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const value = input.value;
+                let charToInsert = ''; 
+
+                if (isControlKey || ['Up', 'Down', 'Left', 'Right', 'Home', 'End', 'PgUp', 'PgDn', 'Ins', 'PrtSc', 'Win', 'Fn', 'NumLk'].includes(key)) {
+                    switch (key) {
+                        case 'Shift':
+                        case 'Caps':
+                            isShiftActive = !isShiftActive;
+                            updateKeyboardLayout();
+                            return;
+                        case 'Enter': // Enter vẫn là phím điều khiển nhưng chèn ký tự
+                            charToInsert = '\n';
+                            break;
+                        case 'Backspace':
+                            if (start !== end) {
+                                input.value = value.slice(0, start) + value.slice(end);
+                                input.selectionStart = input.selectionEnd = start;
+                            } else if (start > 0) {
+                                input.value = value.slice(0, start - 1) + value.slice(end);
+                                input.selectionStart = input.selectionEnd = start - 1;
+                            }
+                            input.focus();
+                            return;
+                        case 'Space':
+                            charToInsert = ' ';
+                            break;
+                        // Phím chức năng/điều hướng (Mock actions)
+                        case 'Up':
+                        case 'Down':
+                        case 'Left':
+                        case 'Right':
+                        case 'Home':
+                        case 'End':
+                            // Di chuyển con trỏ (Mô phỏng đơn giản)
+                            let newPos = start;
+                            if (key === 'Left' || key === 'Up') newPos = Math.max(0, start - 1);
+                            if (key === 'Right' || key === 'Down') newPos = Math.min(value.length, start + 1);
+                            if (key === 'Home') newPos = 0;
+                            if (key === 'End') newPos = value.length;
+                            input.selectionStart = input.selectionEnd = newPos;
+                            input.focus();
+                            return;
+                        case 'Del':
+                            if (start !== end) {
+                                input.value = value.slice(0, start) + value.slice(end);
+                                input.selectionStart = input.selectionEnd = start;
+                            } else if (start < value.length) {
+                                input.value = value.slice(0, start) + value.slice(start + 1);
+                                input.selectionStart = input.selectionEnd = start;
+                            }
+                            input.focus();
+                            return;
+                        case 'Ctrl':
+                        case 'Alt':
+                        case 'Win':
+                        case 'Fn':
+                        case 'PrtSc':
+                        case 'NumLk':
+                        case 'Esc':
+                        case 'Tab':
+                        case 'F1':
+                        case 'F12':
+                            alert(`${key} key pressed (Mock action)`);
+                            return;
+                    }
+                }
+
+                // --- PHẦN XỬ LÝ KÝ TỰ/SỐ ---
+                
+                // Ký tự hiển thị không Shift
+                let keyText = key.length === 1 && key.match(/[a-z]/i) ? key.toLowerCase() : key;
+                
+                if (key.length === 1 && key.match(/[a-z]/i)) {
+                    charToInsert = isShiftActive ? key.toUpperCase() : key.toLowerCase();
+                } else if (isShiftActive && shiftedKeyMap[keyText]) {
+                    charToInsert = shiftedKeyMap[keyText];
+                } else if (key.length === 1 && shiftedKeyMap[keyText]) {
+                    // Nếu không shift, giữ nguyên ký tự gốc (ví dụ: ';')
+                    charToInsert = key;
+                } else {
+                    charToInsert = key;
+                }
+                
+                // Xử lý các phím số phụ (+, -, *, /)
+                if (['/', '*', '-', '+', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(key) && key.length < 2) {
+                    // Nếu là numpad keys, không cần quan tâm shift, cứ chèn key
+                    charToInsert = key; 
+                }
+
+                // Chèn ký tự 
+                if (charToInsert !== '') {
+                    input.value = value.slice(0, start) + charToInsert + value.slice(end);
+                    input.selectionStart = input.selectionEnd = start + charToInsert.length;
+                    input.focus();
+                }
+            };
+
+            const createKeyElement = (key, isControlKey = false, customClass = '') => {
+                const keyEl = document.createElement('div');
+                keyEl.className = 'key ' + customClass;
+                keyEl.textContent = key;
+                
+                // Tùy chỉnh hiển thị chữ cái thường/hoa và ký tự shift
+                if (key.length === 1 && key.match(/[a-z]/i)) {
+                    keyEl.textContent = isShiftActive ? key.toUpperCase() : key.toLowerCase();
+                } else if (shiftedKeyMap[key]) {
+                    // Nếu phím là ký tự shiftable (ví dụ: ';', '1', '-')
+                    keyEl.textContent = isShiftActive ? shiftedKeyMap[key] : key;
+                }
+                
+                // Đánh dấu phím Shift/Caps Active
+                if (key === 'Shift' || key === 'Caps') {
+                    if (isShiftActive) keyEl.classList.add('active');
+                }
+                
+                // Ẩn phím trống
+                if (key === '' || key === 'Fn' || key === 'Win' || key === 'PrtSc') {
+                    if (key === '') keyEl.style.visibility = 'hidden';
+                    // Phím chức năng Fn/Win/PrtSc vẫn hiển thị nhưng chỉ alert
+                }
+
+                keyEl.onclick = () => handleKeyClick(key, isControlKey || key.length > 1); // Coi tất cả phím dài hơn 1 ký tự là control key
+                return keyEl;
+            };
+
+            const updateKeyboardLayout = () => {
+                mainKeysEl.innerHTML = '';
+                navKeysEl.innerHTML = '';
+                numpadKeysEl.innerHTML = '';
+                
+                // --- Khu vực phím chính ---
+                keyboardKeys.main.forEach((rowKeys, rowIndex) => {
+                    const rowEl = document.createElement('div');
+                    rowEl.className = 'key-row';
+
+                    rowKeys.forEach((key, keyIndex) => {
+                        let customClass = '';
+                        // Tùy chỉnh chiều rộng
+                        if (rowIndex === 1 && key === 'Backspace') customClass = 'key-backspace';
+                        if (rowIndex === 2 && key === 'Tab') customClass = 'key-tab';
+                        if (rowIndex === 2 && key === '\\') customClass = 'key-del'; // Dùng key-del cho độ rộng 1.5
+                        if (rowIndex === 3 && key === 'Caps') customClass = 'key-caps';
+                        if (rowIndex === 3 && key === 'Enter') customClass = 'key-enter';
+                        if (rowIndex === 4 && key === 'Shift') customClass = (keyIndex === 0) ? 'key-shift-l' : 'key-shift-r';
+                        if (rowIndex === 5) {
+                            if (key === 'Ctrl') customClass = 'key-ctrl';
+                            if (key === 'Alt') customClass = 'key-alt';
+                            if (key === 'Space') customClass = 'key-space';
+                            if (key === 'Del' || key === 'Esc' || key === 'F12') customClass = 'key-del';
+                        }
+                        const keyEl = createKeyElement(key, key.length > 1, customClass);
+                        rowEl.appendChild(keyEl);
+                    });
+                    mainKeysEl.appendChild(rowEl);
+                });
+                
+                // --- Khu vực điều hướng (Navigation) ---
+                
+                // Hàng 1: Ins, Home, PgUp
+                const navRow1 = document.createElement('div');
+                navRow1.className = 'nav-group top';
+                keyboardKeys.nav[0].forEach(key => navRow1.appendChild(createKeyElement(key, true, 'nav-key')));
+                navKeysEl.appendChild(navRow1);
+                
+                // Hàng 2: Del, End, PgDn
+                const navRow2 = document.createElement('div');
+                navRow2.className = 'nav-group mid';
+                keyboardKeys.nav[1].forEach(key => navRow2.appendChild(createKeyElement(key, true, 'nav-key')));
+                navKeysEl.appendChild(navRow2);
+
+                // Hàng 3 & 4: Mũi tên (Dùng một khu vực riêng để căn chỉnh tốt hơn)
+                const navRow34 = document.createElement('div');
+                navRow34.className = 'nav-group bottom flex-col justify-end h-full';
+                
+                // Row mũi tên trên (Up)
+                const arrowUpRow = document.createElement('div');
+                arrowUpRow.className = 'arrow-row';
+                arrowUpRow.appendChild(createKeyElement('', true, 'nav-key arrow')); // Empty left
+                arrowUpRow.appendChild(createKeyElement('Up', true, 'nav-key arrow'));
+                arrowUpRow.appendChild(createKeyElement('', true, 'nav-key arrow')); // Empty right
+                navRow34.appendChild(arrowUpRow);
+
+                // Row mũi tên dưới (Left, Down, Right)
+                const arrowDownRow = document.createElement('div');
+                arrowDownRow.className = 'arrow-row';
+                keyboardKeys.nav[3].forEach(key => arrowDownRow.appendChild(createKeyElement(key, true, 'nav-key arrow')));
+                navRow34.appendChild(arrowDownRow);
+                
+                navKeysEl.appendChild(navRow34);
+
+
+                // --- Khu vực Numpad ---
+                
+                // Sử dụng Grid Layout cho Numpad
+                const numpadGrid = document.createElement('div');
+                numpadGrid.className = 'numpad-grid h-full grid grid-cols-4 gap-1 flex-grow';
+                numpadKeysEl.appendChild(numpadGrid);
+                
+                const numpadKeysFlat = [
+                    'NumLk', '/', '*', '-',
+                    '7', '8', '9', '+',
+                    '4', '5', '6', 'Enter',
+                    '1', '2', '3', 'Enter',
+                    '0', '.', ''
+                ];
+                
+                // Tạo Numpad keys
+                numpadKeysFlat.forEach((key, index) => {
+                    const keyEl = createKeyElement(key, key.length > 1, 'numpad-key');
+                    
+                    if (key === '0') keyEl.classList.add('numpad-key', 'col-span-2');
+                    if (key === 'Enter') {
+                        // Tránh tạo Enter 2 lần, chỉ cần set span cho Enter thứ nhất (tại vị trí của 4)
+                        if (index === 11) keyEl.classList.add('row-span-2'); 
+                        if (index === 15) return; // Bỏ qua Enter thứ 2
+                    }
+                    if (key === '+') keyEl.classList.add('row-span-2'); // + kéo dài 2 hàng
+
+                    // Xử lý các khoảng trống
+                    if (key === '' || key === 'NumLk') {
+                        keyEl.style.visibility = (key === '') ? 'hidden' : 'visible';
+                    }
+
+                    if (key === 'NumLk') keyEl.classList.add('col-span-1');
+                    
+                    // Thêm vào grid container
+                    numpadGrid.appendChild(keyEl);
+                });
+                
+
+                
+            };
+
+            updateKeyboardLayout();
+        }
+
+        // --- TERMINAL APP SPECIFIC LOGIC ---
+        function setupTerminalApp(appId) {
+            const app = apps[appId];
+            const outputEl = app.element.querySelector('#terminal-output');
+            const inputEl = app.element.querySelector('#terminal-input');
+            const promptEl = app.element.querySelector('#terminal-prompt');
+            const contentEl = app.element.querySelector('.window-content');
+            let passwordMode = false;
+            let currentSudoCommand = '';
+
+            const scrollDown = () => {
+                contentEl.scrollTop = contentEl.scrollHeight;
+            };
+
+            const appendOutput = (text, className = '') => {
+                const span = document.createElement('span');
+                span.className = className;
+                span.textContent = text;
+                outputEl.appendChild(span);
+                outputEl.appendChild(document.createTextNode('\n'));
+                scrollDown();
+            };
+            
+            const printPrompt = () => {
+                promptEl.textContent = `${TERMINAL_USER}-win>`;
+                promptEl.classList.remove('sudo-prompt');
+                inputEl.type = 'text'; // Đảm bảo input là text
+                inputEl.focus();
+            };
+
+            const sudoTimeout = () => {
+                isSudoAuthenticated = false;
+                if (passwordMode) { // Nếu đang ở chế độ nhập mật khẩu khi hết giờ
+                    appendOutput('sudo: session expired');
+                    passwordMode = false;
+                    printPrompt();
+                }
+            };
+
+            const handleCommand = (command) => {
+                const parts = command.trim().split(/\s+/);
+                const cmd = parts[0];
+                const args = parts.slice(1);
+
+                if (passwordMode) {
+                    if (command === SUDO_PASSWORD) {
+                        appendOutput('Authentication successful.');
+                        isSudoAuthenticated = true;
+                        passwordMode = false;
+                        
+                        // Thiết lập hẹn giờ: sudo hết hạn sau 5 phút (300000ms)
+                        if (sudoTimer) clearTimeout(sudoTimer);
+                        sudoTimer = setTimeout(sudoTimeout, 300000); 
+                        
+                        // Chạy lại lệnh sudo đã lưu
+                        if (currentSudoCommand) {
+                            appendOutput(`${TERMINAL_USER}-win> sudo ${currentSudoCommand}`);
+                            executeLinuxCommand(currentSudoCommand, true);
+                            currentSudoCommand = '';
+                        }
+                    } else {
+                        appendOutput('Sorry, try again.', 'error');
+                        passwordMode = false;
+                    }
+                    printPrompt();
+                    return;
+                }
+                
+                if (cmd === 'sudo') {
+                    if (isSudoAuthenticated) {
+                        appendOutput(`${TERMINAL_USER}-win> sudo ${args.join(' ')}`);
+                        executeLinuxCommand(args.join(' '), true);
+                        return;
+                    }
+                    
+                    // Yêu cầu mật khẩu
+                    passwordMode = true;
+                    currentSudoCommand = args.join(' ');
+                    appendOutput(`[sudo] password for ${TERMINAL_USER}-win:`, 'sudo-prompt');
+                    promptEl.textContent = `[sudo] ${TERMINAL_USER}-win> `;
+                    promptEl.classList.add('sudo-prompt');
+                    inputEl.type = 'password'; // CHUYỂN SANG CHẾ ĐỘ PASSWORD
+                    inputEl.focus();
+
+                    return;
+                }
+
+                // Xử lý các lệnh non-sudo
+                executeLinuxCommand(command);
+            };
+
+            const executeLinuxCommand = (command, asSudo = false) => {
+                const parts = command.trim().split(/\s+/);
+                const cmd = parts[0];
+                const args = parts.slice(1);
+
+                let output = '';
+                
+                switch(cmd) {
+                    case 'help':
+                        // ĐÃ XÓA DÒNG TIẾT LỘ MẬT KHẨU
+                        output = `
+Available commands (Mock Linux):
+  help           : Display this help message.
+  ls [path]      : List directory contents.
+  pwd            : Print name of current working directory.
+  cd [dir]       : Change the current directory.
+  whoami         : Print the user name.
+  date           : Print the system date and time.
+  uname -a       : Print system information.
+  sudo [command] : Execute command with superuser privileges.
+  clear          : Clear the terminal screen.
+                        `;
+                        break;
+                    
+                    case 'ls':
+                        let dir = args[0] || currentDirectory;
+                        if (dir === '/') {
+                            output = 'boot  etc  home  lib  usr  var';
+                        } else if (dir === '/home/user' || dir === currentDirectory) {
+                            output = 'Desktop/  Documents/  Pictures/  README.txt';
+                        } else if (dir === '..' || dir === '../') {
+                            // Xử lý cd .. trước rồi mới chạy ls
+                            output = 'Desktop/  Documents/  Pictures/  README.txt'; // Giả sử ls home
+                        } else if (dir === '/home') {
+                            output = 'user/';
+                        } else {
+                             output = `ls: cannot access '${dir}': No such file or directory`;
+                        }
+                        break;
+                        
+                    case 'pwd':
+                        output = currentDirectory;
+                        break;
+
+                    case 'cd':
+                        let targetDir = args[0];
+                        let newDir = currentDirectory;
+
+                        if (!targetDir || targetDir === '~' || targetDir === '/home/user') {
+                            newDir = '/home/user';
+                        } else if (targetDir === '/') {
+                            newDir = '/';
+                        } else if (targetDir === '..') {
+                            if (currentDirectory.lastIndexOf('/') > 0) {
+                                newDir = currentDirectory.substring(0, currentDirectory.lastIndexOf('/'));
+                            } else {
+                                newDir = '/';
+                            }
+                        } else {
+                            // Xử lý đường dẫn tuyệt đối hoặc tương đối
+                            let pathToCheck = targetDir.startsWith('/') ? targetDir : `${currentDirectory === '/' ? '' : currentDirectory}/${targetDir}`;
+
+                            // Mock các thư mục có sẵn
+                            if (pathToCheck === '/home' || pathToCheck === '/home/user' || pathToCheck === '/home/user/Desktop' || pathToCheck === '/') {
+                                newDir = pathToCheck;
+                            } else {
+                                output = `bash: cd: ${targetDir}: No such file or directory`;
+                                newDir = currentDirectory; // Giữ nguyên thư mục nếu không tìm thấy
+                            }
+                        }
+                        
+                        // Cập nhật thư mục nếu không có lỗi
+                        if (output === '') {
+                            currentDirectory = newDir;
+                        }
+                        
+                        break;
+                        
+                    case 'whoami':
+                        output = asSudo ? 'root' : TERMINAL_USER;
+                        break;
+                        
+                    case 'date':
+                        output = new Date().toString();
+                        break;
+                        
+                    case 'uname':
+                        output = 'Linux thienvu-win 5.4.0-100-generic x86_64 GNU/Linux (Mock)';
+                        break;
+
+                    case 'clear':
+                        outputEl.textContent = '';
+                        output = ''; // Không cần thêm dòng prompt vào output
+                        break;
+                        
+                    // Xử lý các lệnh sudo được thực thi
+                    case 'apt':
+                    case 'rm':
+                        if (asSudo) {
+                            output = `Running '${cmd} ${args.join(' ')}' with root privileges... Mock execution successful.`;
+                        } else {
+                            output = `bash: ${cmd}: command not found`;
+                        }
+                        break;
+
+                    default:
+                        output = `bash: ${cmd}: command not found`;
+                        break;
+                }
+                
+                if (cmd !== 'clear' && output) {
+                    appendOutput(output);
+                }
+                
+                // Cần print prompt sau khi execute (trừ khi đang ở chế độ mật khẩu)
+                if (!passwordMode) {
+                    printPrompt();
+                }
+            };
+            
+            // Xử lý Input
+            inputEl.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    const command = inputEl.value.trim();
+                    
+                    // In lại lệnh đã nhập (CHỈ IN DẤU * nếu là password)
+                    if (!passwordMode) {
+                        appendOutput(`${promptEl.textContent}${command}`, 'terminal-prompt');
+                    } else {
+                        // In ra dấu sao cho password
+                        const stars = command.replace(/./g, '*');
+                        appendOutput(`${promptEl.textContent}${stars}`, 'terminal-prompt');
+                    }
+
+                    inputEl.value = ''; // Xóa input
+
+                    if (command === '' && !passwordMode) {
+                        printPrompt();
+                        return;
+                    }
+                    
+                    // Xử lý lệnh
+                    handleCommand(command);
+                }
+            };
+
+            // Focus lại input khi nhấp vào cửa sổ Terminal
+            app.element.onmousedown = () => {
+                activateApp(appId);
+                if (inputEl) inputEl.focus();
+            };
+            
+            // Focus input khi mở app
+            inputEl.focus();
+        }
+
+        // --- DESKTOP CONTEXT MENU LOGIC ---
+        const desktopEl = document.getElementById('desktop');
+        const contextMenu = document.getElementById('desktop-context-menu');
+
+        desktopEl.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            // Đóng Start Menu nếu đang mở
+            if (startMenu.classList.contains('show')) {
+                toggleStartMenu();
+            }
+
+            // Hiển thị Context Menu
+            contextMenu.style.top = `${e.clientY}px`;
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.display = 'block';
+        });
+
+        // Ẩn Context Menu khi nhấp chuột trái hoặc cuộn
+        document.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+        document.addEventListener('scroll', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        // Khởi tạo các Icons Desktop (cần gọi sau khi DOM được tạo)
+        window.onload = () => {
+            lucide.createIcons();
+        };
+
+    </script>
+
+</body>
+</html>
