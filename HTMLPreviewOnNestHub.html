@@ -1,1 +1,163 @@
-<h1>Im uadsfh iusdfhosehfsb dhfhsovjshjdgviusdcvpsejotfhbkjdnvioushe89tsgsdfgdtsjghsdfgh</h1>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thử Nghiệm Tải Nặng 3D (Heavy Load 3D Test)</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Thiết lập body và canvas để đảm bảo màn hình đầy đủ */
+        body { margin: 0; overflow: hidden; font-family: 'Inter', sans-serif; background-color: #0d1117; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            color: #ff0000; /* Màu đỏ nổi bật cho cảnh báo */
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            max-width: 80%;
+            margin: 0 auto;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        CẢNH BÁO NGUY HIỂM: Ứng dụng này được thiết kế để sử dụng tài nguyên CỰC KỲ CAO.
+        Máy tính có thể bị đơ hoặc crash. Hãy tự chịu rủi ro!
+        <br>
+        Đang tạo: <span id="objectCount">0</span> khối Torus Knot phức tạp.
+    </div>
+
+    <script>
+        // Thiết lập cơ bản của Three.js
+        let scene, camera, renderer, objectGroup;
+        let objects = [];
+        // Số lượng đối tượng sẽ được tạo. 100,000 đối tượng sẽ gây áp lực rất lớn.
+        // Bạn có thể thay đổi số này để tăng/giảm độ nặng.
+        const NUM_OBJECTS = 100000; 
+
+        // Hàm khởi tạo cảnh
+        function init() {
+            // Cảnh (Scene)
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d1117); // Nền tối
+
+            // Camera (ống kính)
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.z = 100;
+
+            // Renderer (Bộ kết xuất)
+            renderer = new THREE.WebGLRenderer({ antialias: false }); // Tắt khử răng cưa để giảm tải GPU một chút, nhưng số lượng đối tượng vẫn là yếu tố chính
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio > 1 ? 1 : 1); // Giới hạn pixel ratio để giảm tải, nhưng có thể bỏ qua để tăng tải
+            document.body.appendChild(renderer.domElement);
+
+            // Nhóm để chứa tất cả các đối tượng
+            objectGroup = new THREE.Group();
+            scene.add(objectGroup);
+
+            // Ánh sáng môi trường
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            // Ánh sáng điểm
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(100, 100, 100);
+            scene.add(pointLight);
+
+            // Tạo hình học phức tạp
+            // TorusKnotGeometry là một hình học phức tạp với nhiều đỉnh và mặt
+            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 128, 16); // High segments/tubular segments = High polycount
+            
+            // Lấy tham chiếu đến phần tử đếm
+            const objectCountElement = document.getElementById('objectCount');
+
+            // Tạo và đặt vị trí ngẫu nhiên cho số lượng lớn đối tượng
+            for (let i = 0; i < NUM_OBJECTS; i++) {
+                // Sử dụng vật liệu đơn giản nhưng mỗi đối tượng vẫn là một Mesh riêng biệt
+                const material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+                    flatShading: true // Giảm tính toán shader một chút, tập trung vào số lượng đối tượng
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+
+                // Đặt vị trí ngẫu nhiên trong một phạm vi lớn
+                mesh.position.x = (Math.random() - 0.5) * 500;
+                mesh.position.y = (Math.random() - 0.5) * 500;
+                mesh.position.z = (Math.random() - 0.5) * 500;
+
+                // Xoay ngẫu nhiên ban đầu
+                mesh.rotation.x = Math.random() * Math.PI * 2;
+                mesh.rotation.y = Math.random() * Math.PI * 2;
+
+                // Thêm vào nhóm và mảng theo dõi
+                objectGroup.add(mesh);
+                objects.push(mesh);
+                
+                // Cập nhật số lượng đối tượng đang được tạo
+                if (i % 1000 === 0) {
+                    objectCountElement.textContent = (i + 1).toLocaleString('en-US');
+                }
+            }
+            
+            // Cập nhật lần cuối sau khi tạo xong
+            objectCountElement.textContent = NUM_OBJECTS.toLocaleString('en-US');
+
+            // Xử lý sự kiện thay đổi kích thước cửa sổ
+            window.addEventListener('resize', onWindowResize, false);
+
+            // Bắt đầu vòng lặp hoạt hình
+            animate();
+        }
+
+        // Hàm xử lý thay đổi kích thước
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Vòng lặp hoạt hình
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const timer = Date.now() * 0.0001;
+
+            // Di chuyển camera xung quanh cảnh để thay đổi Frustum Culling (buộc GPU phải tính toán lại)
+            camera.position.x = Math.cos(timer) * 150;
+            camera.position.y = Math.sin(timer) * 150;
+            camera.lookAt(scene.position);
+
+            // *** Tải Nặng CPU/GPU TẠI ĐÂY ***
+            // Lặp qua TẤT CẢ 100,000 đối tượng và thay đổi thuộc tính của chúng mỗi frame.
+            // Điều này tiêu tốn CPU (vòng lặp JS) và buộc GPU phải tính toán lại các ma trận thế giới/xem cho mỗi đối tượng.
+            objects.forEach((mesh, index) => {
+                // Thay đổi xoay
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.005;
+
+                // Thêm một chút dao động vị trí để tăng tính toán ma trận
+                mesh.position.z += Math.sin(timer + index * 0.01) * 0.1;
+                mesh.position.x += Math.cos(timer + index * 0.01) * 0.1;
+            });
+
+            // Yêu cầu kết xuất (Render)
+            renderer.render(scene, camera);
+        }
+
+        // Khởi động ứng dụng
+        window.onload = init;
+    </script>
+</body>
+</html>
